@@ -35,7 +35,7 @@ class PopUp extends React.Component{
 					<div className="pop-up__btn-wrapper">
 						<div className="btn-close" onClick={this.props.toggleModal}>Close</div>
 						<div className="btn-add" 
-									onClick={this.props.addImage(
+									onClick={() => this.props.addImage(
 										this.state.title, 
 										this.state.url, 
 										Math.random())}>Add</div>
@@ -50,7 +50,7 @@ class Header extends React.Component{
 
 	render(){
 		return( 
-			<header className="page-header">
+			<header className="page-header" >
 				<div className="page-header__img">
 					<img src="../img/black-round.png" alt="" />
 				</div>
@@ -73,10 +73,10 @@ class Button extends React.Component{
 class ListGallery extends React.Component{
 	render(){
 		const imagesArray = this.props.imagesArray.map((item, index) => {
-			return <ListGalleryItem title={item.title}  url={item.url} key={item.id}/>
+			return <ListGalleryItem title={item.title}  url={item.url} id={item.id} key={item.id} removeItem = {this.props.removeItem}/>
 		});
 		return (
-			<div className="list-galery">
+			<div className="list-galery" >
 				{imagesArray}
 			</div>
 		)
@@ -84,18 +84,37 @@ class ListGallery extends React.Component{
 }
 
 class ListGalleryItem extends React.Component{
+	
+	constructor(props){
+		super(props);
+		this.state = {
+			showDelete: false
+		};
+		this.toggleMobileDelete =this.toggleMobileDelete.bind(this)
+	}
+
+	toggleMobileDelete(){
+
+		this.setState({
+			showDelete: !this.state.showDelete
+		})
+	}
+	
 	render(){
+		const id = this.props.id;
+		let mobileDelete;
+		if (this.state.showDelete){
+			mobileDelete = <div className="list-galery__item_mobile-delete" onClick={() => this.props.removeItem(id)}>Delete</div>
+		}
 		return(
 			<div className="list-galery__item">
 				<div className="list-galery__item-header">
 					<div className="list-galery__item-title">{this.props.title}</div>
-					<div className="list-galery__item_delete">Delete</div>
+					<div className="list-galery__item_delete" onClick={() => this.props.removeItem(id)}>Delete</div>
 				</div>
 				<div className="list-galery__item-img">
-					<img src={this.props.url} alt="" />
-					<div className="list-galery__item_mobile-delete">
-						Delete
-					</div>
+					<img src={this.props.url} alt="" onClick={this.toggleMobileDelete} />
+					{mobileDelete}
 				</div>
 			</div>
 		)
@@ -123,7 +142,10 @@ class App extends React.Component{
 		};
 		this.toggleModal = this.toggleModal.bind(this);
 		this.addImageInArray = this.addImageInArray.bind(this);
+		this.removeImageFromArray = this.removeImageFromArray.bind(this);
 	}
+
+	
 
 	addImageInArray(title, url, id){
 		const newItem = {
@@ -132,14 +154,17 @@ class App extends React.Component{
 			id: id
 		};
 
-		console.log(newItem);
-		console.log(this.state.images)
-		/*this.setState(prevState => ({
+		this.setState(prevState => ({
       images: prevState.images.concat(newItem)
-    }));*/
+    }));
 	}
 
-	
+	removeImageFromArray(key){
+		const newArray = this.state.images.filter(function(item){
+			return item.id !== key;
+		});
+		this.setState({images: newArray})
+	}
 
 	toggleModal(){
 		this.setState({
@@ -155,7 +180,7 @@ class App extends React.Component{
 					: null}
 				<Header />
 				<Button toggleModal={this.toggleModal} />
-				<ListGallery imagesArray={this.state.images} />
+				<ListGallery imagesArray={this.state.images} removeItem={this.removeImageFromArray} />
 			</div>
 		) 
 	}
