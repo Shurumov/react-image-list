@@ -73,7 +73,14 @@ class Button extends React.Component{
 class ListGallery extends React.Component{
 	render(){
 		const imagesArray = this.props.imagesArray.map((item, index) => {
-			return <ListGalleryItem title={item.title}  url={item.url} id={item.id} key={item.id} removeItem = {this.props.removeItem}/>
+			return <ListGalleryItem 
+							appWidth={this.props.appWidth} 
+							title={item.title}  
+							url={item.url} 
+							id={item.id} 
+							key={item.id} 
+							mobileDelete={item.mobileDelete}
+							removeItem = {this.props.removeItem}/>
 		});
 		return (
 			<div className="list-galery" >
@@ -84,36 +91,23 @@ class ListGallery extends React.Component{
 }
 
 class ListGalleryItem extends React.Component{
-	
-	constructor(props){
-		super(props);
-		this.state = {
-			showDelete: false
-		};
-		this.toggleMobileDelete =this.toggleMobileDelete.bind(this)
-	}
 
-	toggleMobileDelete(){
 
-		this.setState({
-			showDelete: !this.state.showDelete
-		})
-	}
-	
+
 	render(){
 		const id = this.props.id;
 		let mobileDelete;
-		if (this.state.showDelete){
+		if (this.props.mobileDelete){
 			mobileDelete = <div className="list-galery__item_mobile-delete" onClick={() => this.props.removeItem(id)}>Delete</div>
 		}
 		return(
-			<div className="list-galery__item">
+			<div className="list-galery__item" onClick={this.hiddenMobileDelete}>
 				<div className="list-galery__item-header">
 					<div className="list-galery__item-title">{this.props.title}</div>
 					<div className="list-galery__item_delete" onClick={() => this.props.removeItem(id)}>Delete</div>
 				</div>
 				<div className="list-galery__item-img">
-					<img src={this.props.url} alt="" onClick={this.toggleMobileDelete} />
+					<img src={this.props.url} alt="" onClick={this.showMobileDelete} />
 					{mobileDelete}
 				</div>
 			</div>
@@ -131,21 +125,31 @@ class App extends React.Component{
 				{
 					title: "Flower",
 					url: "http://bipbap.ru/wp-content/uploads/2017/09/Cool-High-Resolution-Wallpaper-1920x1080-640x360.jpg",
+					mobileDelete: false,
 					id: 1
 				},
 				{
 					title: "Mountain",
 					url: "http://www.radionetplus.ru/uploads/posts/2013-05/1369460621_panda-26.jpg",
+					mobileDelete: false,
 					id: 2
 				}
-			]
+			],
+			applicationWidth: null
 		};
 		this.toggleModal = this.toggleModal.bind(this);
 		this.addImageInArray = this.addImageInArray.bind(this);
 		this.removeImageFromArray = this.removeImageFromArray.bind(this);
+		this.appWidth = this.appWidth.bind(this);
+		this.showMobileDelete = this.showMobileDelete.bind(this);
+		this.hiddenMobileDelete = this.hiddenMobileDelete.bind(this)
 	}
 
-	
+	appWidth(e) {
+		this.setState({
+			applicationWidth: e.target.width
+		})
+  }
 
 	addImageInArray(title, url, id){
 		const newItem = {
@@ -172,15 +176,29 @@ class App extends React.Component{
 		})
 	}
 
+	showMobileDelete(e){
+		
+		e.stopPropagation();
+	}
+
+	hiddenMobileDelete(){
+
+	}
+	
+
 	render(){
 		return(
-			<div className="app-wrapper">
+			<div className="app-wrapper" onLoad={this.appWidth} >
 				{this.state.showModal ? 
 					<PopUp toggleModal={this.toggleModal} addImage={this.addImageInArray} /> 
 					: null}
-				<Header />
+				<Header  />
 				<Button toggleModal={this.toggleModal} />
-				<ListGallery imagesArray={this.state.images} removeItem={this.removeImageFromArray} />
+				<ListGallery 
+					imagesArray={this.state.images} 
+					removeItem={this.removeImageFromArray} 
+					appWidth={this.state.applicationWidth}
+					/>
 			</div>
 		) 
 	}
