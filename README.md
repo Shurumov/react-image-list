@@ -5,4 +5,3 @@
 ### `npm start`
 4. Для создания релизной сборки необходимо выполнить
 ### `npm run build`
-5. Собраное приложение можно посмотрнеть по [ссылке](https://shurumov.github.io/react-image-list/index.html) 
