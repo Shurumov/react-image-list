@@ -52,7 +52,7 @@ class Header extends React.Component{
 		return( 
 			<header className="page-header" >
 				<div className="page-header__img">
-					<img src="../img/black-round.png" alt="" />
+					
 				</div>
 				<div className="page-header__title">Images</div>
 			</header>
