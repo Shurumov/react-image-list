@@ -71,8 +71,11 @@ class Button extends React.Component{
 }
 
 class ListGallery extends React.Component{
+
+	
+
 	render(){
-		const imagesArray = this.props.imagesArray.map((item, index) => {
+		const imagesArray = this.props.imagesArray.map((item) => {
 			return <ListGalleryItem 
 							appWidth={this.props.appWidth} 
 							title={item.title}  
@@ -91,17 +94,41 @@ class ListGallery extends React.Component{
 }
 
 class ListGalleryItem extends React.Component{
+	constructor(props){
+		super(props)
+		this.state = {
+			mobileDelete: this.props.mobileDelete
+		};
+		this.showMobileDelete = this.showMobileDelete.bind(this);
+		this.hiddenMobileDelete = this.hiddenMobileDelete.bind(this)
+	}
 
-
+	showMobileDelete(e){
+		this.setState({
+			mobileDelete: true
+		})
+		e.stopPropagation();
+	}
+	hiddenMobileDelete(){
+		this.setState({
+			mobileDelete: false
+		})
+	}
 
 	render(){
 		const id = this.props.id;
 		let mobileDelete;
-		if (this.props.mobileDelete){
-			mobileDelete = <div className="list-galery__item_mobile-delete" onClick={() => this.props.removeItem(id)}>Delete</div>
+		if (this.state.mobileDelete){
+			mobileDelete = 
+			<div className="list-galery__item_mobile-delete_wrapper">
+				<div className="list-galery__item_mobile-delete_cancel" 
+							onClick={this.hiddenMobileDelete}>Cancel</div>
+				<div className="list-galery__item_mobile-delete" 
+							onClick={() => this.props.removeItem(id)}>Delete</div>
+			</div>
 		}
 		return(
-			<div className="list-galery__item" onClick={this.hiddenMobileDelete}>
+			<div className="list-galery__item" >
 				<div className="list-galery__item-header">
 					<div className="list-galery__item-title">{this.props.title}</div>
 					<div className="list-galery__item_delete" onClick={() => this.props.removeItem(id)}>Delete</div>
@@ -125,13 +152,11 @@ class App extends React.Component{
 				{
 					title: "Flower",
 					url: "http://bipbap.ru/wp-content/uploads/2017/09/Cool-High-Resolution-Wallpaper-1920x1080-640x360.jpg",
-					mobileDelete: false,
 					id: 1
 				},
 				{
 					title: "Mountain",
 					url: "http://www.radionetplus.ru/uploads/posts/2013-05/1369460621_panda-26.jpg",
-					mobileDelete: false,
 					id: 2
 				}
 			],
@@ -141,8 +166,6 @@ class App extends React.Component{
 		this.addImageInArray = this.addImageInArray.bind(this);
 		this.removeImageFromArray = this.removeImageFromArray.bind(this);
 		this.appWidth = this.appWidth.bind(this);
-		this.showMobileDelete = this.showMobileDelete.bind(this);
-		this.hiddenMobileDelete = this.hiddenMobileDelete.bind(this)
 	}
 
 	appWidth(e) {
@@ -158,8 +181,11 @@ class App extends React.Component{
 			id: id
 		};
 
+		const images = this.state.images;
+		images.unshift(newItem)
+
 		this.setState(prevState => ({
-      images: prevState.images.concat(newItem)
+      images: images
     }));
 	}
 
@@ -176,14 +202,8 @@ class App extends React.Component{
 		})
 	}
 
-	showMobileDelete(e){
-		
-		e.stopPropagation();
-	}
 
-	hiddenMobileDelete(){
 
-	}
 	
 
 	render(){
