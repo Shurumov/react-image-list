@@ -118,7 +118,7 @@ class ListGalleryItem extends React.Component{
 	render(){
 		const id = this.props.id;
 		let mobileDelete;
-		if (this.state.mobileDelete){
+		if (this.state.mobileDelete && this.props.appWidth< 704){
 			mobileDelete = 
 			<div className="list-galery__item_mobile-delete_wrapper">
 				<div className="list-galery__item_mobile-delete_cancel" 

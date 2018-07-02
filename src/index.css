@@ -1,3 +1,9 @@
+@media (max-width:767.98px){
+	body{
+		margin: 0;
+	}
+}
+
 body {
 	font-size: 16px;
 	min-width: 320px;
@@ -182,8 +188,6 @@ img {
 }
 
 .btn::after {
-	-webkit-transition: border-color .2s ease;
-	-o-transition: border-color .2s ease;
 	transition: border-color .2s ease;
 	position: absolute;
 	content: '';
