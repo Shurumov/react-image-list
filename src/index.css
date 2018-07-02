@@ -28,6 +28,12 @@ html {
 	color: #fff
 }
 
+@media (max-width:767.98px) {
+	body {
+		margin: 0
+	}
+}
+
 body {
 	font-size: 16px;
 	min-width: 320px;
@@ -64,6 +70,7 @@ body {
 }
 
 .pop-up input {
+	border-width: 2px;
 	margin-bottom: 20px;
 	padding: 10px
 }
