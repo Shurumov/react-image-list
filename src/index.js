@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import PropTypes from 'prop-types';
 import './index.css';
-
 
 class PopUp extends React.Component{
 	constructor(props){
@@ -24,21 +24,16 @@ class PopUp extends React.Component{
 			url: e.target.value
 		})
 	}
-
 	render(){
 		return(
 			<div className="pop-up_wrapper">
 				<div className="pop-up">
 					<div className="pop-up__title">New image</div>
-					<input onChange={this.titleChange} id="title" placeholder="Title" type="text" />
-					<input onChange={this.urlChange} id="url" placeholder="URL" type="text"/>
+						<InputTitle titleChange={this.titleChange}  />
+						<InputUrl urlChange ={this.urlChange} />
 					<div className="pop-up__btn-wrapper">
-						<div className="btn-close" onClick={this.props.toggleModal}>Close</div>
-						<div className="btn-add" 
-									onClick={() => this.props.addImage(
-										this.state.title, 
-										this.state.url, 
-										Math.random())}>Add</div>
+						<ButtonCloseModal toggleModal={this.props.toggleModal}/>
+						<ButtonAddImage title={this.state.title} url={this.state.url} addImage={this.props.addImage} />
 					</div>
 				</div>
 			</div>
@@ -46,21 +41,78 @@ class PopUp extends React.Component{
 	}
 }
 
-class Header extends React.Component{
+PopUp.propTypes={
+	toggleModal: PropTypes.func,
+	addImage: PropTypes.func
+}
 
+
+class InputTitle extends React.Component {
+	render(){
+		return(
+			<div>
+				<input onChange={this.props.titleChange} id="title" placeholder="Title" type="text" />
+			</div>
+		)
+	}
+}
+
+InputTitle.propTypes = {
+	titleChange: PropTypes.func
+}
+
+class InputUrl extends React.Component {
+	render(){
+		return(
+			<div>
+				<input onChange={this.props.urlChange} id="url" placeholder="URL" type="text"/>
+			</div>
+		)
+	}
+}
+
+InputUrl.propTypes = {
+	urlChange: PropTypes.func
+}
+
+class ButtonCloseModal extends React.Component {
+	render(){
+		return <div className="btn-close" onClick={this.props.toggleModal}>Close</div>
+	}
+}
+
+ButtonCloseModal.propTypes = {
+	toggleModal: PropTypes.func
+}
+
+class ButtonAddImage extends React.Component {
+	render(){
+		return(
+					<div className="btn-add" 
+							onClick={() => this.props.addImage(this.props.title, this.props.url, Math.random())}>
+							Add
+					</div>
+		)}
+}
+
+ButtonAddImage.propTypes = {
+	title: PropTypes.string,
+	url: PropTypes.string,
+	addImage: PropTypes.func
+}
+
+class Header extends React.Component{
 	render(){
 		return( 
 			<header className="page-header" >
-				<div className="page-header__img">
-					
-				</div>
+				<div className="page-header__img"></div>
 				<div className="page-header__title">Images</div>
 			</header>
 		)
 	}
 }
 
-class Button extends React.Component{
+class ButtonOpenModal extends React.Component{
 	render(){
 		return (
 			<div onClick={this.props.toggleModal} className="btn add-new-img">
@@ -70,10 +122,11 @@ class Button extends React.Component{
 	}
 }
 
+ButtonOpenModal.propTypes = {
+	toggleModal: PropTypes.func
+}
+
 class ListGallery extends React.Component{
-
-	
-
 	render(){
 		const imagesArray = this.props.imagesArray.map((item) => {
 			return <ListGalleryItem 
@@ -82,7 +135,6 @@ class ListGallery extends React.Component{
 							url={item.url} 
 							id={item.id} 
 							key={item.id} 
-							mobileDelete={item.mobileDelete}
 							removeItem = {this.props.removeItem}/>
 		});
 		return (
@@ -93,16 +145,26 @@ class ListGallery extends React.Component{
 	}
 }
 
+ListGallery.propTypes = {
+	imagesArray: PropTypes.arrayOf(
+		PropTypes.shape({
+		title: PropTypes.string,
+		url: PropTypes.string,
+		id: PropTypes.number
+	})),
+	removeItem: PropTypes.func,
+	appWidth: PropTypes.number
+}
+
 class ListGalleryItem extends React.Component{
 	constructor(props){
 		super(props)
 		this.state = {
-			mobileDelete: this.props.mobileDelete
+			mobileDelete: false
 		};
 		this.showMobileDelete = this.showMobileDelete.bind(this);
 		this.hiddenMobileDelete = this.hiddenMobileDelete.bind(this)
 	}
-
 	showMobileDelete(e){
 		this.setState({
 			mobileDelete: true
@@ -114,25 +176,23 @@ class ListGalleryItem extends React.Component{
 			mobileDelete: false
 		})
 	}
-
 	render(){
 		const id = this.props.id;
 		let mobileDelete;
 		if (this.state.mobileDelete && this.props.appWidth< 704){
 			mobileDelete = 
 			<div className="list-galery__item_mobile-delete_wrapper">
-				<div className="list-galery__item_mobile-delete_cancel" 
-							onClick={this.hiddenMobileDelete}>Cancel</div>
-				<div className="list-galery__item_mobile-delete" 
-							onClick={() => this.props.removeItem(id)}>Delete</div>
+				<div className="list-galery__item_mobile-delete_cancel" onClick={this.hiddenMobileDelete}>Cancel</div>
+				<div className="list-galery__item_mobile-delete" onClick={() => this.props.removeItem(id)}>Delete</div>
 			</div>
 		}
 		return(
 			<div className="list-galery__item" >
-				<div className="list-galery__item-header">
-					<div className="list-galery__item-title">{this.props.title}</div>
-					<div className="list-galery__item_delete" onClick={() => this.props.removeItem(id)}>Delete</div>
-				</div>
+				<ListGalleryItemHeader 
+					title = {this.props.title} 
+					removeItem = {this.props.removeItem}	
+					id = {this.props.id}
+				/>
 				<div className="list-galery__item-img">
 					<img src={this.props.url} alt="" onClick={this.showMobileDelete} />
 					{mobileDelete}
@@ -140,6 +200,32 @@ class ListGalleryItem extends React.Component{
 			</div>
 		)
 	}
+}
+
+ListGalleryItem.propTypes = {
+	appWidth: PropTypes.number,
+	title: PropTypes.string,
+	url: PropTypes.string,
+	id: PropTypes.number,
+	removeItem: PropTypes.func
+}
+
+class ListGalleryItemHeader extends React.Component {
+	render(){
+		const id = this.props.id
+		return(
+			<div className="list-galery__item-header">
+				<div className="list-galery__item-title">{this.props.title}</div>
+				<div className="list-galery__item_delete" onClick={() => this.props.removeItem(id)}>Delete</div>
+			</div>
+		) 
+	}
+}
+
+ListGalleryItemHeader.propTypes = {
+	title: PropTypes.string,
+	removeItem: PropTypes.func,
+	id: PropTypes.number
 }
 
 class App extends React.Component{
@@ -201,11 +287,6 @@ class App extends React.Component{
 			showModal: !this.state.showModal
 		})
 	}
-
-
-
-	
-
 	render(){
 		return(
 			<div className="app-wrapper" onLoad={this.appWidth} >
@@ -213,7 +294,7 @@ class App extends React.Component{
 					<PopUp toggleModal={this.toggleModal} addImage={this.addImageInArray} /> 
 					: null}
 				<Header  />
-				<Button toggleModal={this.toggleModal} />
+				<ButtonOpenModal toggleModal={this.toggleModal} />
 				<ListGallery 
 					imagesArray={this.state.images} 
 					removeItem={this.removeImageFromArray} 
